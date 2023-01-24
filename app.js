@@ -2,18 +2,22 @@ const url = "quiz.json";
 const questions = []; // load all of the data into the questions array
 const output = document.querySelector(".output");
 const btn = document.querySelector(".btn");
+let cur = 0; // current question
+const player = { score: 0, answers: [] };
+
 const totalOutput = document.querySelector("h1");
 let holder = []; // hold all of the newly constructed elements
-let cur = 0; // current question
-const player = { score: 0, asnwers: [] };
 
 btn.addEventListener("click", (e) => {
   if (cur >= questions.length) {
     let html = `<hr><h1>Score = ${player.score}</h1>`;
-    player.asnwers.forEach((el) => {
-      html += `Questions : ${el.question} <br>`;
-      html += `Response : ${el.response} <br>`;
-      html += `Result : ${el.correct} <br>`;
+    player.answers.forEach((el) => {
+      let bg = el.correct ? "green" : "red";
+      html += `<div style="background:${bg}">Question : ${capitalizeText(
+        el.question
+      )}? <br>`;
+      html += `Response : ${el.response} (${el.correctAnswer})<br>`;
+      html += `Result : ${el.correct} </div><br>`;
     });
     output.innerHTML = html;
   } else {
@@ -37,29 +41,23 @@ function newQuestion() {
   el.options.sort(() => {
     return 0.5 - Math.random();
   });
-
   console.log(cur);
   console.log(questions.length);
   console.log(questions[cur]);
-
   output.innerHTML = "";
 
   const que1 = document.createElement("div");
   que1.classList.add("que");
-
   let strOutput = capitalizeText(el.question);
+  console.log(strOutput);
 
   const ans1 = document.createElement("div");
-
   que1.textContent = strOutput + "?";
-
-  holder.length = 0; // clear array
-
+  holder.length = 0;
   el.options.forEach((ans) => {
     const div = document.createElement("div");
-
     holder.push(div);
-
+    div.correctAnswer = el.correct;
     div.textContent = ans.response;
     div.classList.add("box");
     div.classList.add("boxCursor");
@@ -67,20 +65,20 @@ function newQuestion() {
     div.addEventListener("click", selOption);
     ans1.append(div);
   });
-
   output.append(que1);
   output.append(ans1);
 }
 
 // Function for remove event listener (to handle click event)
 function selOption(e) {
-  // track the progress
+  //track the progress
+  console.log(e);
   const tempObj = {
     question: questions[cur].question,
     response: e.target.textContent,
+    correctAnswer: e.target.correctAnswer,
   };
   endTurn();
-
   if (e.target.correct) {
     player.score++;
     updateScore();
@@ -90,14 +88,16 @@ function selOption(e) {
     e.target.style.backgroundColor = "red";
     tempObj.correct = false;
   }
-  player.asnwers.push(tempObj);
+  player.answers.push(tempObj);
   e.target.style.color = "white";
   nextBtn();
   console.log(player);
 }
 
 function updateScore() {
-  totalOutput.innerHTML = `${cur} out of ${questions.length} Score: ${player.score}`;
+  totalOutput.innerHTML = `${cur + 1} out of ${questions.length} Score: ${
+    player.score
+  }`;
 }
 
 function endTurn() {
@@ -106,6 +106,16 @@ function endTurn() {
     el.style.backgroundColor = "#ddd";
     el.classList.remove("boxCursor");
   });
+}
+
+function nextBtn() {
+  btn.style.display = "block";
+  cur++;
+  if (cur >= questions.length) {
+    btn.textContent = "See Score";
+  } else {
+    btn.textContent = "Next Question";
+  }
 }
 
 function loadQuestions() {
@@ -131,20 +141,14 @@ function loadQuestions() {
         }; // obj for holding information and set it up as an object
         temp.push(tempObj);
         console.log(temp);
-        let mainTemp = { question: el.question, options: temp };
+        let mainTemp = {
+          question: el.question,
+          options: temp,
+          correct: el.correct,
+        };
         questions.push(mainTemp); // Populate an array
       });
       console.log(questions);
       //   document.write(JSON.stringify(questions));
     });
-}
-
-function nextBtn() {
-  btn.style.display = "block";
-  cur++;
-  if (cur >= questions.length) {
-    btn.textContent = "See Score";
-  } else {
-    btn.textContent = "Next Question";
-  }
 }
