@@ -5,11 +5,17 @@ const btn = document.querySelector(".btn");
 const totalOutput = document.querySelector("h1");
 let holder = []; // hold all of the newly constructed elements
 let cur = 0; // current question
-const player = { score: 0 };
+const player = { score: 0, asnwers: [] };
 
 btn.addEventListener("click", (e) => {
   if (cur >= questions.length) {
-    output.innerHTML = "Game Over!";
+    let html = `<hr><h1>Score = ${player.score}</h1>`;
+    player.asnwers.forEach((el) => {
+      html += `Questions : ${el.question} <br>`;
+      html += `Response : ${el.response} <br>`;
+      html += `Result : ${el.correct} <br>`;
+    });
+    output.innerHTML = html;
   } else {
     newQuestion();
   }
@@ -20,6 +26,10 @@ window.addEventListener("DOMContentLoaded", () => {
   //   console.log("ready");
   loadQuestions();
 });
+
+function capitalizeText(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 function newQuestion() {
   updateScore();
@@ -37,10 +47,10 @@ function newQuestion() {
   const que1 = document.createElement("div");
   que1.classList.add("que");
 
-  let strOutput = el.question;
-  strOutput = strOutput.charAt(0).toUpperCase() + strOutput.slice(1);
+  let strOutput = capitalizeText(el.question);
 
   const ans1 = document.createElement("div");
+
   que1.textContent = strOutput + "?";
 
   holder.length = 0; // clear array
@@ -64,16 +74,26 @@ function newQuestion() {
 
 // Function for remove event listener (to handle click event)
 function selOption(e) {
+  // track the progress
+  const tempObj = {
+    question: questions[cur].question,
+    response: e.target.textContent,
+  };
   endTurn();
+
   if (e.target.correct) {
     player.score++;
     updateScore();
+    tempObj.correct = true;
     e.target.style.backgroundColor = "green";
   } else {
     e.target.style.backgroundColor = "red";
+    tempObj.correct = false;
   }
+  player.asnwers.push(tempObj);
   e.target.style.color = "white";
   nextBtn();
+  console.log(player);
 }
 
 function updateScore() {

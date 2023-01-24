@@ -13,10 +13,5 @@
     "question": "what color is the Sun",
     "correct": "yellow",
     "incorrect": ["blue", "green", "pink", "purple"]
-  },
-  {
-    "question": "what color is the Sun",
-    "correct": "yellow",
-    "incorrect": ["blue", "green", "pink", "purple"]
   }
 ]
