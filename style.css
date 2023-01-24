@@ -13,11 +13,24 @@
   text-align: center;
 }
 
-.box:hover {
+.boxCursor {
+  cursor: pointer;
+}
+
+.boxCursor:hover {
   background-color: azure;
 }
 
 .que {
   font-size: 1.8em;
   margin-bottom: 15px;
+}
+
+.btn {
+  display: block;
+  width: 50%;
+  margin: auto;
+  margin-top: 20px;
+  border-top: 1px soled black;
+  padding: 10px;
 }
